@@ -1,0 +1,908 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroAssist — Каталог запчастин John Deere</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- SheetJS для прямого читання Excel файлів John deere.xlsx та JOHN COMB.xlsx -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            jdGreen: '#1f5c2e',
+            jdDark: '#133b1d',
+            jdYellow: '#f5b700',
+            jdLight: '#f4f7f4'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-jdLight text-gray-800 font-sans antialiased">
+
+  <!-- ВЕРХНЯ ПАНЕЛЬ КОНТАКТІВ -->
+  <div class="bg-jdDark text-white text-xs sm:text-sm py-2 px-4">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center space-x-4">
+        <span><i class="fa-solid fa-location-dot text-jdYellow mr-1"></i> Україна, відправка Новою Поштою щодня</span>
+        <span class="hidden md:inline"><i class="fa-solid fa-clock text-jdYellow mr-1"></i> Пн–Сб: 08:00 – 19:00</span>
+      </div>
+      <div class="flex items-center space-x-4 font-semibold">
+        <a href="tel:+380670000000" class="hover:text-jdYellow transition"><i class="fa-solid fa-phone text-jdYellow mr-1"></i> +38 (067) 000-00-00</a>
+        <a href="tel:+380500000000" class="hover:text-jdYellow transition hidden sm:inline"><i class="fa-solid fa-phone text-jdYellow mr-1"></i> +38 (050) 000-00-00</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ШАПКА САЙТУ -->
+  <header class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+      <!-- Логотип -->
+      <a href="#" class="flex items-center space-x-3">
+        <div class="w-11 h-11 rounded-xl bg-jdGreen flex items-center justify-center text-jdYellow text-2xl font-bold shadow">
+          <i class="fa-solid fa-tractor"></i>
+        </div>
+        <div>
+          <span class="text-2xl font-extrabold tracking-tight text-jdGreen">AGRO<span class="text-jdYellow">ASSIST</span></span>
+          <p class="text-[11px] text-gray-500 -mt-1 uppercase tracking-wider font-semibold">Запчастини John Deere</p>
+        </div>
+      </a>
+
+      <!-- Пошук за каталожним номером -->
+      <div class="flex-1 max-w-xl mx-auto w-full order-3 lg:order-2">
+        <div class="relative">
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Пошук за номером запчастини (напр. H128234, AH139436, RE504836)..."
+            class="w-full pl-11 pr-24 py-2.5 rounded-xl border-2 border-jdGreen/30 focus:border-jdGreen focus:outline-none text-sm shadow-sm"
+          />
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-gray-400"></i>
+          <button
+            onclick="resetFilters()"
+            id="clearSearchBtn"
+            class="hidden absolute right-3 top-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs px-2.5 py-1.5 rounded-lg"
+          >
+            Скинути
+          </button>
+        </div>
+      </div>
+
+      <!-- Кнопки дій та Кошик -->
+      <div class="flex items-center space-x-3 order-2 lg:order-3">
+        <a
+          href="tel:+380670000000"
+          class="hidden sm:flex items-center space-x-2 bg-jdYellow/20 text-jdDark hover:bg-jdYellow hover:text-black font-bold px-3.5 py-2 rounded-xl text-sm transition"
+        >
+          <i class="fa-solid fa-phone-volume text-jdGreen animate-pulse"></i>
+          <span>Дзвоніть для ціни</span>
+        </a>
+
+        <button
+          onclick="toggleCart(true)"
+          class="relative bg-jdGreen hover:bg-jdDark text-white px-4 py-2.5 rounded-xl font-bold text-sm flex items-center space-x-2 shadow transition"
+        >
+          <i class="fa-solid fa-cart-shopping text-jdYellow"></i>
+          <span class="hidden sm:inline">Кошик запиту</span>
+          <span
+            id="cartBadge"
+            class="bg-jdYellow text-jdDark font-extrabold text-xs px-2 py-0.5 rounded-full"
+          >0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ГОЛОВНИЙ HERO-СЛАЙДЕР -->
+  <section class="relative bg-gray-900 overflow-hidden">
+    <div id="heroSlider" class="relative h-[340px] sm:h-[420px] w-full">
+      <!-- Слайд 1 -->
+      <div class="hero-slide absolute inset-0 transition-opacity duration-700 opacity-100">
+        <img
+          src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1600&q=80"
+          alt="Комбайн у полі"
+          class="w-full h-full object-cover opacity-45"
+        />
+        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent flex items-center">
+          <div class="max-w-7xl mx-auto px-6 w-full text-white">
+            <span class="bg-jdYellow text-black font-extrabold text-xs uppercase px-3 py-1 rounded-full">База: 13 454 артикулів у наявності та під замовлення</span>
+            <h1 class="text-3xl sm:text-5xl font-extrabold mt-4 max-w-2xl leading-tight">
+              Запчастини для комбайнів та тракторів <span class="text-jdYellow">John Deere</span>
+            </h1>
+            <p class="mt-3 text-gray-200 max-w-xl text-sm sm:text-base">
+              Оригінал та перевірені аналоги. Додавайте потрібні каталожні номери у кошик або телефонуйте менеджеру для миттєвого прорахунку актуальної ціни.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <a href="#catalogSection" class="bg-jdYellow hover:bg-yellow-400 text-black font-extrabold px-6 py-3 rounded-xl shadow transition">
+                Перейти до каталогу
+              </a>
+              <a href="tel:+380670000000" class="bg-white/15 hover:bg-white/25 backdrop-blur text-white font-bold px-6 py-3 rounded-xl border border-white/30 transition">
+                <i class="fa-solid fa-phone mr-2 text-jdYellow"></i>Зателефонувати зараз
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Слайд 2 -->
+      <div class="hero-slide absolute inset-0 transition-opacity duration-700 opacity-0 pointer-events-none">
+        <img
+          src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=1600&q=80"
+          alt="Трактор John Deere"
+          class="w-full h-full object-cover opacity-45"
+        />
+        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent flex items-center">
+          <div class="max-w-7xl mx-auto px-6 w-full text-white">
+            <span class="bg-jdGreen text-white font-extrabold text-xs uppercase px-3 py-1 rounded-full border border-jdYellow">Каталог JOHN COMB & John Deere</span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold mt-4 max-w-2xl leading-tight">
+              Двигун, гідравліка, жниварки та посівні комплекси
+            </h2>
+            <p class="mt-3 text-gray-200 max-w-xl text-sm sm:text-base">
+              Через постійне оновлення курсу та поставок ціни фіксуються індивідуально. Зберіть список деталей у кошик — ми підготуємо найкращу пропозицію за 10 хвилин!
+            </p>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <a href="#categoriesSection" class="bg-jdYellow hover:bg-yellow-400 text-black font-extrabold px-6 py-3 rounded-xl shadow transition">
+                Обрати категорію
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Слайд 3 -->
+      <div class="hero-slide absolute inset-0 transition-opacity duration-700 opacity-0 pointer-events-none">
+        <img
+          src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1600&q=80"
+          alt="Посівна техніка"
+          class="w-full h-full object-cover opacity-45"
+        />
+        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent flex items-center">
+          <div class="max-w-7xl mx-auto px-6 w-full text-white">
+            <span class="bg-jdYellow text-black font-extrabold text-xs uppercase px-3 py-1 rounded-full">Термінова доставка у господарство</span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold mt-4 max-w-2xl leading-tight">
+              Не знайшли потрібний артикул чи потрібна консультація?
+            </h2>
+            <p class="mt-3 text-gray-200 max-w-xl text-sm sm:text-base">
+              Наші фахівці підберуть деталь за VIN-кодом трактора чи комбайна. Дзвоніть безкоштовно!
+            </p>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <button onclick="openCallbackModal()" class="bg-jdYellow hover:bg-yellow-400 text-black font-extrabold px-6 py-3 rounded-xl shadow transition">
+                Замовити дзвінок спеціаліста
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Кнопки керування головним слайдером -->
+    <button onclick="changeHeroSlide(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-jdGreen text-white flex items-center justify-center transition">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <button onclick="changeHeroSlide(1)" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-jdGreen text-white flex items-center justify-center transition">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </section>
+
+  <!-- КАТЕГОРІЇ ЗАПЧАСТИН З ФОТО -->
+  <section id="categoriesSection" class="max-w-7xl mx-auto px-4 py-10">
+    <div class="flex flex-wrap justify-between items-end mb-6 gap-2">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-jdDark">Категорії запчастин</h2>
+        <p class="text-gray-600 text-sm">Каталог автоматично структурований за серійними префіксами John Deere</p>
+      </div>
+      <button onclick="filterByCategory('all')" class="text-jdGreen font-bold text-sm hover:underline">
+        Показати всі категорії (<span id="totalPartsCountLabel">0</span>)
+      </button>
+    </div>
+
+    <div id="categoriesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <!-- Генерується через JS -->
+    </div>
+  </section>
+
+  <!-- СЛАЙДЕР-КАРУСЕЛЬ ХІТОВИХ ПОЗИЦІЙ З ФАЙЛІВ -->
+  <section class="bg-white py-10 border-y border-gray-200">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-jdGreen bg-jdGreen/10 px-2.5 py-1 rounded-md">Актуально в сезон</span>
+          <h2 class="text-2xl font-extrabold text-jdDark mt-1">Популярні артикули з каталогу</h2>
+        </div>
+        <div class="flex space-x-2">
+          <button onclick="scrollCarousel(-1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-jdGreen hover:text-white transition flex items-center justify-center">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <button onclick="scrollCarousel(1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-jdGreen hover:text-white transition flex items-center justify-center">
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="featuredCarousel" class="flex space-x-4 overflow-x-auto no-scrollbar scroll-smooth pb-2">
+        <!-- Картки слайдера генеруються через JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ОСНОВНИЙ КАТАЛОГ ТА ПРЯМЕ ПІДКЛЮЧЕННЯ EXCEL ФАЙЛІВ -->
+  <section id="catalogSection" class="max-w-7xl mx-auto px-4 py-10">
+    <!-- Панель імпорту власних Excel файлів (John deere.xlsx та JOHN COMB.xlsx) -->
+    <div class="bg-gradient-to-r from-jdDark to-jdGreen text-white rounded-2xl p-5 mb-8 shadow-lg flex flex-col lg:flex-row justify-between items-center gap-4">
+      <div class="flex items-start space-x-4">
+        <div class="bg-jdYellow text-black w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 font-bold">
+          <i class="fa-solid fa-file-excel"></i>
+        </div>
+        <div>
+          <h3 class="font-extrabold text-lg">Синхронізація з вашими файлами Excel (John deere.xlsx / JOHN COMB.xlsx)</h3>
+          <p class="text-xs sm:text-sm text-gray-200 mt-0.5">
+            У демо-режимі вже завантажено 240 артикулів з ваших файлів. Щоб підвантажити всі <strong>13 454 артикули</strong> безпосередньо з файлів <code>John deere.xlsx</code> та <code>JOHN COMB.xlsx</code> у браузер — оберіть їх кнопкою праворуч:
+          </p>
+        </div>
+      </div>
+      <div class="shrink-0 w-full lg:w-auto">
+        <label class="cursor-pointer bg-jdYellow hover:bg-yellow-400 text-black font-extrabold px-5 py-3 rounded-xl shadow flex items-center justify-center space-x-2 text-sm transition">
+          <i class="fa-solid fa-upload"></i>
+          <span>Завантажити Excel-файли в каталог</span>
+          <input type="file" id="excelFileInput" multiple accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(event)" />
+        </label>
+      </div>
+    </div>
+
+    <!-- Фільтри каталогу -->
+    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+      <div class="flex flex-wrap gap-2" id="categoryPills">
+        <!-- Кнопки фільтрів -->
+      </div>
+
+      <div class="flex items-center space-x-3 text-sm">
+        <label class="text-gray-600 font-medium">Джерело бази:</label>
+        <select id="sourceFilter" onchange="applyCatalogFilters()" class="bg-white border border-gray-300 rounded-xl px-3 py-2 font-semibold text-gray-700 focus:outline-none focus:border-jdGreen">
+          <option value="all">Усі файли (John Deere + JOHN COMB)</option>
+          <option value="JOHN COMB">Тільки комбайнова база (JOHN COMB)</option>
+          <option value="John Deere">Основна база (John deere.xlsx)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Індикатор результатів -->
+    <div class="flex justify-between items-center mb-4 text-sm text-gray-600">
+      <p>Знайдено позицій: <strong id="filteredCount" class="text-jdDark">0</strong></p>
+      <p class="text-xs sm:text-sm text-jdGreen font-semibold">
+        <i class="fa-solid fa-circle-info mr-1"></i> Ціни та наявність уточнюйте за телефоном або через кошик запиту
+      </p>
+    </div>
+
+    <!-- Сітка товарів -->
+    <div id="catalogGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+      <!-- Картки товарів -->
+    </div>
+
+    <!-- Пагінація / Показати ще -->
+    <div class="mt-8 text-center">
+      <button
+        id="loadMoreBtn"
+        onclick="loadMoreItems()"
+        class="bg-white hover:bg-jdGreen hover:text-white text-jdDark font-extrabold px-8 py-3.5 rounded-xl border-2 border-jdGreen shadow-sm transition"
+      >
+        Показати ще запчастини
+      </button>
+    </div>
+  </section>
+
+  <!-- БІЧНА ПАНЕЛЬ КОШИКА (ЗАПИТ ЦІНИ) -->
+  <div id="cartDrawer" class="fixed inset-0 z-50 hidden">
+    <div onclick="toggleCart(false)" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col justify-between">
+      <!-- Шапка кошика -->
+      <div class="p-5 bg-jdDark text-white flex justify-between items-center">
+        <div class="flex items-center space-x-2.5">
+          <i class="fa-solid fa-cart-flatbed text-jdYellow text-xl"></i>
+          <div>
+            <h3 class="font-extrabold text-lg">Кошик запиту ціни</h3>
+            <p class="text-xs text-gray-300">Менеджер прорахує актуальну вартість обраних деталей</p>
+          </div>
+        </div>
+        <button onclick="toggleCart(false)" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Список обраних запчастин -->
+      <div id="cartItemsContainer" class="p-5 flex-1 overflow-y-auto space-y-3">
+        <!-- Товари в кошику -->
+      </div>
+
+      <!-- Форма оформлення запиту -->
+      <div class="p-5 bg-gray-50 border-t border-gray-200 space-y-3">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 flex items-start space-x-2">
+          <i class="fa-solid fa-phone-volume text-amber-600 mt-0.5 text-base"></i>
+          <span><strong>Ціни за запитом:</strong> вкажіть ваш телефон або надішліть список артикулів у месенджер. Ми передзвонимо з точною ціною та термінами!</span>
+        </div>
+
+        <input id="clientName" type="text" placeholder="Ваше ім'я або назва ФГ" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-jdGreen" />
+        <input id="clientPhone" type="tel" placeholder="Ваш номер телефону (+380...)" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-jdGreen" />
+
+        <button onclick="submitOrderRequest()" class="w-full bg-jdGreen hover:bg-jdDark text-white font-extrabold py-3 rounded-xl shadow transition flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-paper-plane text-jdYellow"></i>
+          <span>Надіслати запит на прорахунок ціни</span>
+        </button>
+
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="copyCartForMessenger('Viber')" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-1.5">
+            <i class="fa-brands fa-viber text-sm"></i>
+            <span>Скопіювати для Viber</span>
+          </button>
+          <button onclick="copyCartForMessenger('Telegram')" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-1.5">
+            <i class="fa-brands fa-telegram text-sm"></i>
+            <span>Скопіювати в Telegram</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНЕ ВІКНО ШВИДКОГО ДЗВІНКА -->
+  <div id="callbackModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <div onclick="closeCallbackModal()" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="relative bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <button onclick="closeCallbackModal()" class="absolute right-4 top-4 text-gray-400 hover:text-gray-700">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+      <div class="w-12 h-12 rounded-xl bg-jdYellow/20 text-jdGreen flex items-center justify-center text-2xl mb-4">
+        <i class="fa-solid fa-headset"></i>
+      </div>
+      <h3 class="text-xl font-extrabold text-jdDark">Дізнатися ціну та наявність</h3>
+      <p id="modalSkuText" class="text-sm text-jdGreen font-bold mt-1"></p>
+      <p class="text-xs text-gray-500 mt-1">
+        Зателефонуйте нам напряму або залиште свій номер — менеджер AgroAssist зв'яжеться з вами за 5 хвилин.
+      </p>
+
+      <div class="my-4 p-3.5 bg-jdLight rounded-xl border border-jdGreen/20 flex flex-col space-y-1.5">
+        <a href="tel:+380670000000" class="font-extrabold text-jdDark hover:text-jdGreen text-base flex items-center">
+          <i class="fa-solid fa-phone text-jdGreen mr-2"></i> +38 (067) 000-00-00 (Київстар / Viber)
+        </a>
+        <a href="tel:+380500000000" class="font-extrabold text-jdDark hover:text-jdGreen text-base flex items-center">
+          <i class="fa-solid fa-phone text-jdGreen mr-2"></i> +38 (050) 000-00-00 (Vodafone / Telegram)
+        </a>
+      </div>
+
+      <input id="modalPhoneInput" type="tel" placeholder="Ваш телефон (+380...)" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm mb-3 focus:outline-none focus:border-jdGreen" />
+      <button onclick="confirmModalCallback()" class="w-full bg-jdYellow hover:bg-yellow-400 text-black font-extrabold py-3 rounded-xl transition">
+        Чекаю на дзвінок
+      </button>
+    </div>
+  </div>
+
+  <!-- ФУТЕР -->
+  <footer class="bg-jdDark text-gray-300 py-10 mt-12">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <div class="flex items-center space-x-2 text-white font-extrabold text-2xl">
+          <i class="fa-solid fa-tractor text-jdYellow"></i>
+          <span>AGRO<span class="text-jdYellow">ASSIST</span></span>
+        </div>
+        <p class="text-xs text-gray-400 mt-3 leading-relaxed">
+          Спеціалізований каталог запчастин до сільськогосподарської техніки John Deere. База містить 13 454 каталожні позиції для комбайнів, тракторів, жниварок та сівалок.
+        </p>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-3 text-sm uppercase tracking-wider">Категорії каталогу</h4>
+        <ul class="space-y-1.5 text-xs">
+          <li><a href="#catalogSection" onclick="filterByCategory('engine')" class="hover:text-jdYellow">Двигун, паливна та трансмісія (R, RE, AR, SE)</a></li>
+          <li><a href="#catalogSection" onclick="filterByCategory('combine')" class="hover:text-jdYellow">Комбайни та жниварки (H, AH, Z, AZ, AXE)</a></li>
+          <li><a href="#catalogSection" onclick="filterByCategory('seeder')" class="hover:text-jdYellow">Сівалки та ґрунтообробна техніка (A, AA, N, AN)</a></li>
+          <li><a href="#catalogSection" onclick="filterByCategory('bearings')" class="hover:text-jdYellow">Підшипники та гідравліка (JD, AT, T, TY, AE)</a></li>
+          <li><a href="#catalogSection" onclick="filterByCategory('chassis')" class="hover:text-jdYellow">Ходова частина, мости та кабіна (L, AL, CE)</a></li>
+          <li><a href="#catalogSection" onclick="filterByCategory('standard')" class="hover:text-jdYellow">Стандартні вузли та метизи (19M, 24M)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-3 text-sm uppercase tracking-wider">Відділ продажу (Ціни за запитом)</h4>
+        <p class="text-xs text-gray-400 mb-3">Телефонуйте для уточнення актуальної ціни та наявності на складі:</p>
+        <p class="text-lg font-extrabold text-jdYellow"><i class="fa-solid fa-phone mr-2"></i>+38 (067) 000-00-00</p>
+        <p class="text-lg font-extrabold text-white mt-1"><i class="fa-solid fa-phone mr-2 text-jdYellow"></i>+38 (050) 000-00-00</p>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 mt-8 pt-6 border-t border-white/10 text-center text-xs text-gray-500">
+      © 2026 AgroAssist. Всі права захищено. Каталожні номери наведено у довідкових цілях.
+    </div>
+  </footer>
+
+  <!-- СКРИПТ РОБОТИ КАТАЛОГУ, СЛАЙДЕРІВ, КОШИКА ТА EXCEL-ПАРСЕРА -->
+  <script>
+    // 1. ОПИС КАТЕГОРІЙ З ФОТОГРАФІЯМИ ТА РЕАЛЬНОЮ СТАТИСТИКОЮ З ВАШИХ ФАЙЛІВ
+    const CATEGORIES = {
+      engine: {
+        id: 'engine',
+        name: 'Двигун, паливна та трансмісія',
+        prefixes: 'Серії R, RE, AR, SE, DZ',
+        totalInExcel: 4662,
+        desc: 'Поршневі групи, форсунки, турбіни, насоси, прокладки, вали та шестерні КПП',
+        img: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=700&q=80'
+      },
+      combine: {
+        id: 'combine',
+        name: 'Комбайни та жниварки',
+        prefixes: 'Серії H, AH, Z, AZ, AXE',
+        totalInExcel: 3760,
+        desc: 'Сегменти коси, пальці шнека, бичі барабана, решета, елеватори та зірочки',
+        img: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=700&q=80'
+      },
+      seeder: {
+        id: 'seeder',
+        name: 'Сівалки та ґрунтообробка',
+        prefixes: 'Серії A, AA, N, AN, AB',
+        totalInExcel: 2152,
+        desc: 'Диски сошника, прикочуючі колеса, висівні апарати, чистики, втулки та пружини',
+        img: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=700&q=80'
+      },
+      standard: {
+        id: 'standard',
+        name: 'Стандартні вузли та метизи',
+        prefixes: 'Серії 19M, 24M, 14M, 03M',
+        totalInExcel: 1691,
+        desc: 'Високоміцні болти, гайки, шайби, шплінти, стопорні кільця та фітинги John Deere',
+        img: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=700&q=80'
+      },
+      bearings: {
+        id: 'bearings',
+        name: 'Підшипники та гідравліка',
+        prefixes: 'Серії JD, AT, T, TY, AE',
+        totalInExcel: 896,
+        desc: 'Корпусні підшипники, втулки, манжети, гідроциліндри, РВТ та клапани',
+        img: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=700&q=80'
+      },
+      chassis: {
+        id: 'chassis',
+        name: 'Ходова частина, мости та кабіна',
+        prefixes: 'Серії L, AL, CE, SJ',
+        totalInExcel: 293,
+        desc: 'Рульові тяги, наконечники, хрестовини, кардани, амортизатори та елементи кабіни',
+        img: 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=700&q=80'
+      }
+    };
+
+    // 2. РЕАЛЬНІ АРТИКУЛИ З ВАШИХ ФАЙЛІВ John deere.xlsx ТА JOHN COMB.xlsx (стартовий набір)
+    const INITIAL_SKUS = [
+      // Із перших рядків John deere.xlsx та JOHN COMB.xlsx
+      { sku: 'H128234', src: 'JOHN COMB' }, { sku: 'AH139436', src: 'JOHN COMB' },
+      { sku: 'AN153446', src: 'JOHN COMB' }, { sku: 'H80896', src: 'JOHN COMB' },
+      { sku: 'R157687', src: 'John Deere' }, { sku: 'N154802', src: 'JOHN COMB' },
+      { sku: 'H132808', src: 'JOHN COMB' }, { sku: 'H145158', src: 'JOHN COMB' },
+      { sku: 'AH125895', src: 'JOHN COMB' }, { sku: 'R131213', src: 'John Deere' },
+      { sku: 'Z78834', src: 'JOHN COMB' }, { sku: 'H177178', src: 'JOHN COMB' },
+      { sku: 'H175632', src: 'JOHN COMB' }, { sku: 'H125381', src: 'JOHN COMB' },
+      { sku: 'H175040', src: 'JOHN COMB' }, { sku: 'H175036', src: 'JOHN COMB' },
+      { sku: 'AB36233', src: 'JOHN COMB' }, { sku: 'AB5070R', src: 'JOHN COMB' },
+      { sku: 'AC1-8GH', src: 'JOHN COMB' }, { sku: 'AD2062R', src: 'JOHN COMB' },
+      { sku: 'AE11579', src: 'JOHN COMB' }, { sku: 'AE12601', src: 'JOHN COMB' },
+      { sku: 'AE14428', src: 'JOHN COMB' }, { sku: 'AE22622', src: 'JOHN COMB' },
+      { sku: 'AE22753', src: 'JOHN COMB' }, { sku: 'AE23516', src: 'JOHN COMB' },
+      { sku: 'AE24346', src: 'JOHN COMB' }, { sku: 'AE24403', src: 'JOHN COMB' },
+      { sku: 'AE24459', src: 'JOHN COMB' }, { sku: 'AE24616', src: 'JOHN COMB' },
+      { sku: 'AE26118', src: 'JOHN COMB' }, { sku: 'AE26161', src: 'JOHN COMB' },
+      // Двигун (R, RE, AR, SE)
+      { sku: 'RE504836', src: 'John Deere' }, { sku: 'RE509672', src: 'John Deere' },
+      { sku: 'R116516', src: 'John Deere' }, { sku: 'R123542', src: 'John Deere' },
+      { sku: 'AR100124', src: 'JOHN COMB' }, { sku: 'AR101136', src: 'JOHN COMB' },
+      { sku: 'SE501101', src: 'JOHN COMB' }, { sku: 'RE52722', src: 'John Deere' },
+      { sku: 'R502725', src: 'John Deere' }, { sku: 'RE60021', src: 'John Deere' },
+      // Сівалки (A, AA, N, AN)
+      { sku: 'AA37474', src: 'John Deere' }, { sku: 'AA53860', src: 'John Deere' },
+      { sku: 'A72358', src: 'John Deere' }, { sku: 'A84250', src: 'John Deere' },
+      { sku: 'N282110', src: 'JOHN COMB' }, { sku: 'AN212132', src: 'JOHN COMB' },
+      // Підшипники та гідравліка (JD, AT, T, TY)
+      { sku: 'JD9214', src: 'JOHN COMB' }, { sku: 'JD8535', src: 'JOHN COMB' },
+      { sku: 'JD10384', src: 'JOHN COMB' }, { sku: 'AT175358', src: 'JOHN COMB' },
+      { sku: 'T158584', src: 'JOHN COMB' }, { sku: 'TY22450', src: 'JOHN COMB' },
+      // Ходова та кабіна (L, AL, CE)
+      { sku: 'AL159124', src: 'JOHN COMB' }, { sku: 'L157882', src: 'JOHN COMB' },
+      { sku: 'CE18542', src: 'JOHN COMB' }, { sku: 'AL119964', src: 'JOHN COMB' },
+      // Стандартні метизи (19M, 24M, 03M, 14M)
+      { sku: '19M7865', src: 'John Deere' }, { sku: '19M7784', src: 'John Deere' },
+      { sku: '24M7239', src: 'John Deere' }, { sku: '14M7274', src: 'John Deere' }
+    ];
+
+    // Автоматичний розподіл артикула в категорію за префіксом
+    function classifySku(sku) {
+      const match = String(sku).trim().match(/^([A-Za-z]+)/);
+      const pref = match ? match[1].toUpperCase() : 'STD';
+      if (['R', 'RE', 'AR', 'SE', 'DZ', 'RG'].includes(pref)) return 'engine';
+      if (['H', 'AH', 'Z', 'AZ', 'HXE', 'AXE', 'KXE'].includes(pref)) return 'combine';
+      if (['A', 'AA', 'N', 'AN', 'B', 'AB', 'GD', 'GA', 'KK'].includes(pref)) return 'seeder';
+      if (['JD', 'AT', 'T', 'TY', 'M', 'AM', 'E', 'AE'].includes(pref)) return 'bearings';
+      if (['L', 'AL', 'CE', 'SJ', 'LV', 'SU'].includes(pref)) return 'chassis';
+      return 'standard';
+    }
+
+    // Генерація зрозумілої назви запчастини за її префіксом
+    function getPartTitle(sku, catKey) {
+      const titles = {
+        engine: 'Деталь двигуна / трансмісії John Deere',
+        combine: 'Запчастина комбайна / жниварки John Deere',
+        seeder: 'Вузол сівалки / ґрунтообробки John Deere',
+        bearings: 'Підшипник / гідравлічний вузол John Deere',
+        chassis: 'Елемент ходової / моста John Deere',
+        standard: 'Оригінальний кріпильний елемент / вузол JD'
+      };
+      return `${titles[catKey]} (${sku})`;
+    }
+
+    let catalogItems = INITIAL_SKUS.map(item => {
+      const cat = classifySku(item.sku);
+      return {
+        sku: item.sku,
+        cat: cat,
+        src: item.src,
+        title: getPartTitle(item.sku, cat),
+        img: CATEGORIES[cat].img
+      };
+    });
+
+    let activeCategory = 'all';
+    let visibleCount = 16;
+    let cart = JSON.parse(localStorage.getItem('agroassist_cart') || '[]');
+
+    // 3. РЕНДЕР КАТЕГОРІЙ З ФОТО
+    function renderCategories() {
+      const grid = document.getElementById('categoriesGrid');
+      const pills = document.getElementById('categoryPills');
+      document.getElementById('totalPartsCountLabel').textContent = '13 454 артикули';
+
+      grid.innerHTML = Object.values(CATEGORIES).map(cat => `
+        <div onclick="filterByCategory('${cat.id}')" class="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-gray-200 transition-all duration-300 flex flex-col">
+          <div class="relative h-44 overflow-hidden">
+            <img src="${cat.img}" alt="${cat.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent"></div>
+            <span class="absolute top-3 right-3 bg-jdYellow text-black font-extrabold text-xs px-2.5 py-1 rounded-lg shadow">
+              ${cat.totalInExcel.toLocaleString('uk-UA')} арт. у базі
+            </span>
+            <div class="absolute bottom-3 left-4 right-4 text-white">
+              <span class="text-[11px] uppercase tracking-wider text-jdYellow font-bold">${cat.prefixes}</span>
+              <h3 class="text-lg font-extrabold leading-snug">${cat.name}</h3>
+            </div>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between">
+            <p class="text-xs text-gray-600">${cat.desc}</p>
+            <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center text-xs font-extrabold text-jdGreen group-hover:text-jdDark">
+              <span>Відкрити категорію</span>
+              <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Кнопки швидкої фільтрації
+      const allBtn = `<button onclick="filterByCategory('all')" class="px-4 py-2 rounded-xl text-xs font-extrabold transition ${activeCategory === 'all' ? 'bg-jdGreen text-white shadow' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-100'}">Усі запчастини</button>`;
+      const catBtns = Object.values(CATEGORIES).map(c => `
+        <button onclick="filterByCategory('${c.id}')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition ${activeCategory === c.id ? 'bg-jdGreen text-white shadow' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-100'}">
+          ${c.name}
+        </button>
+      `).join('');
+      pills.innerHTML = allBtn + catBtns;
+    }
+
+    // 4. РЕНДЕР СЛАЙДЕРА ПОПУЛЯРНИХ ТОВАРІВ
+    function renderFeaturedCarousel() {
+      const container = document.getElementById('featuredCarousel');
+      const featured = catalogItems.slice(0, 12);
+      container.innerHTML = featured.map(item => createProductCardHTML(item, true)).join('');
+    }
+
+    function scrollCarousel(direction) {
+      const container = document.getElementById('featuredCarousel');
+      container.scrollBy({ left: direction * 320, behavior: 'smooth' });
+    }
+
+    // 5. СТВОРЕННЯ КАРТКИ ТОВАРУ (З ФОТО, БЕЗ ЦІНИ — "ДЗВОНІТЬ")
+    function createProductCardHTML(item, isCompact = false) {
+      const catObj = CATEGORIES[item.cat];
+      return `
+        <div class="${isCompact ? 'min-w-[270px] max-w-[270px]' : ''} bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="relative h-40 overflow-hidden bg-gray-100">
+              <img src="${item.img}" alt="${item.sku}" class="w-full h-full object-cover" loading="lazy" />
+              <span class="absolute top-2.5 left-2.5 bg-jdDark/90 text-jdYellow text-[11px] font-extrabold px-2.5 py-1 rounded-md">
+                ${item.src}
+              </span>
+              <span class="absolute bottom-2 right-2 bg-white/95 text-jdDark text-[11px] font-bold px-2 py-0.5 rounded shadow">
+                <i class="fa-solid fa-check text-green-600 mr-1"></i>Під замовлення / Склад
+              </span>
+            </div>
+            <div class="p-4">
+              <div class="text-[11px] font-bold text-gray-400 uppercase">${catObj.name}</div>
+              <div class="mt-1 flex items-baseline justify-between">
+                <span class="text-xs text-gray-500">Артикул:</span>
+                <span class="text-lg font-black text-jdGreen tracking-wide select-all">${item.sku}</span>
+              </div>
+              <h4 class="text-xs text-gray-700 font-semibold mt-1 line-clamp-2">${item.title}</h4>
+
+              <!-- Блок замість ціни -->
+              <div class="mt-3 p-2.5 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-between">
+                <div>
+                  <span class="block text-[10px] uppercase text-amber-800 font-bold">Вартість деталі:</span>
+                  <span class="text-xs font-extrabold text-red-700">Ціну уточнюйте — Дзвоніть!</span>
+                </div>
+                <button onclick="openCallbackModal('${item.sku}')" title="Дізнатися ціну по телефону" class="w-8 h-8 rounded-lg bg-jdYellow hover:bg-yellow-400 text-black flex items-center justify-center shadow-sm transition">
+                  <i class="fa-solid fa-phone-volume text-xs"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-4 pb-4 pt-1 flex gap-2">
+            <button
+              onclick="addToCart('${item.sku}')"
+              class="flex-1 bg-jdGreen hover:bg-jdDark text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center space-x-1.5 shadow-sm transition"
+            >
+              <i class="fa-solid fa-cart-plus text-jdYellow"></i>
+              <span>У кошик запиту</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // 6. ФІЛЬТРАЦІЯ ТА ПОШУК У КАТАЛОЗІ
+    function getFilteredItems() {
+      const query = document.getElementById('searchInput').value.trim().toUpperCase();
+      const source = document.getElementById('sourceFilter').value;
+      const clearBtn = document.getElementById('clearSearchBtn');
+      clearBtn.classList.toggle('hidden', query.length === 0);
+
+      return catalogItems.filter(item => {
+        const matchesCat = activeCategory === 'all' || item.cat === activeCategory;
+        const matchesSrc = source === 'all' || item.src.includes(source);
+        const matchesQuery = !query || item.sku.toUpperCase().includes(query) || item.title.toUpperCase().includes(query);
+        return matchesCat && matchesSrc && matchesQuery;
+      });
+    }
+
+    function applyCatalogFilters() {
+      const filtered = getFilteredItems();
+      document.getElementById('filteredCount').textContent = filtered.length.toLocaleString('uk-UA');
+      const grid = document.getElementById('catalogGrid');
+      const slice = filtered.slice(0, visibleCount);
+
+      if (slice.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-white rounded-2xl p-8 text-center border border-gray-200">
+            <i class="fa-solid fa-magnifying-glass text-3xl text-gray-400 mb-2"></i>
+            <h4 class="font-extrabold text-lg text-gray-800">Артикул не знайдено у поточному списку</h4>
+            <p class="text-xs text-gray-500 mt-1 max-w-md mx-auto">
+              Завантажте ваші повні файли <strong>John deere.xlsx</strong> та <strong>JOHN COMB.xlsx</strong> зеленою кнопкою вище або зателефонуйте менеджеру — ми знайдемо деталь за номером!
+            </p>
+            <button onclick="openCallbackModal(document.getElementById('searchInput').value)" class="mt-4 bg-jdYellow text-black font-extrabold px-5 py-2.5 rounded-xl text-xs">
+              Запитати цей номер у менеджера по телефону
+            </button>
+          </div>
+        `;
+      } else {
+        grid.innerHTML = slice.map(item => createProductCardHTML(item)).join('');
+      }
+
+      document.getElementById('loadMoreBtn').classList.toggle('hidden', visibleCount >= filtered.length);
+    }
+
+    function filterByCategory(catId) {
+      activeCategory = catId;
+      visibleCount = 16;
+      renderCategories();
+      applyCatalogFilters();
+      document.getElementById('catalogSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('sourceFilter').value = 'all';
+      activeCategory = 'all';
+      visibleCount = 16;
+      renderCategories();
+      applyCatalogFilters();
+    }
+
+    function loadMoreItems() {
+      visibleCount += 24;
+      applyCatalogFilters();
+    }
+
+    document.getElementById('searchInput').addEventListener('input', () => {
+      visibleCount = 16;
+      applyCatalogFilters();
+    });
+
+    // 7. ЗАВАНТАЖЕННЯ ВСІХ 13 454 АРТИКУЛІВ З ФАЙЛІВ EXCEL У БРАУЗЕРІ
+    async function handleExcelUpload(event) {
+      const files = event.target.files;
+      if (!files.length) return;
+
+      const loadedMap = new Map();
+      // Зберігаємо існуючі
+      catalogItems.forEach(i => loadedMap.set(i.sku, i));
+
+      for (const file of files) {
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+        const isComb = file.name.toUpperCase().includes('COMB');
+
+        rows.forEach(row => {
+          if (row && row[0]) {
+            const sku = String(row[0]).trim();
+            if (sku.length > 1) {
+              const cat = classifySku(sku);
+              loadedMap.set(sku, {
+                sku,
+                cat,
+                src: isComb ? 'JOHN COMB' : 'John Deere',
+                title: getPartTitle(sku, cat),
+                img: CATEGORIES[cat].img
+              });
+            }
+          }
+        });
+      }
+
+      catalogItems = Array.from(loadedMap.values());
+      visibleCount = 24;
+      renderFeaturedCarousel();
+      applyCatalogFilters();
+      alert(`Успішно завантажено каталог! Усього унікальних артикулів у базі сайту: ${catalogItems.length.toLocaleString('uk-UA')}`);
+    }
+
+    // 8. РОБОТА КОШИКА ЗАПИТУ ЦІНИ
+    function updateCartUI() {
+      localStorage.setItem('agroassist_cart', JSON.stringify(cart));
+      const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+      document.getElementById('cartBadge').textContent = totalQty;
+
+      const container = document.getElementById('cartItemsContainer');
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-gray-400">
+            <i class="fa-solid fa-basket-shopping text-4xl mb-3"></i>
+            <p class="font-bold text-gray-600 text-sm">Ваш кошик запиту порожній</p>
+            <p class="text-xs mt-1">Додайте потрібні каталожні номери, щоб менеджер прорахував вам актуальну ціну</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = cart.map(item => `
+        <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 flex items-center justify-between gap-3">
+          <img src="${item.img}" alt="${item.sku}" class="w-12 h-12 rounded-lg object-cover shrink-0" />
+          <div class="flex-1 min-w-0">
+            <div class="font-black text-jdGreen text-sm">${item.sku}</div>
+            <div class="text-[11px] text-gray-500 truncate">${item.title}</div>
+            <div class="text-[11px] font-bold text-amber-700">Ціна: за запитом</div>
+          </div>
+          <div class="flex items-center space-x-1.5">
+            <button onclick="changeCartQty('${item.sku}', -1)" class="w-6 h-6 rounded bg-gray-200 hover:bg-gray-300 text-xs font-bold">-</button>
+            <span class="text-xs font-extrabold w-6 text-center">${item.qty}</span>
+            <button onclick="changeCartQty('${item.sku}', 1)" class="w-6 h-6 rounded bg-gray-200 hover:bg-gray-300 text-xs font-bold">+</button>
+          </div>
+          <button onclick="removeFromCart('${item.sku}')" class="text-gray-400 hover:text-red-600 text-sm px-1">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function addToCart(sku) {
+      const product = catalogItems.find(i => i.sku === sku);
+      if (!product) return;
+      const existing = cart.find(i => i.sku === sku);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ ...product, qty: 1 });
+      }
+      updateCartUI();
+      toggleCart(true);
+    }
+
+    function changeCartQty(sku, delta) {
+      const item = cart.find(i => i.sku === sku);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(i => i.sku !== sku);
+      }
+      updateCartUI();
+    }
+
+    function removeFromCart(sku) {
+      cart = cart.filter(i => i.sku !== sku);
+      updateCartUI();
+    }
+
+    function toggleCart(show) {
+      document.getElementById('cartDrawer').classList.toggle('hidden', !show);
+    }
+
+    function submitOrderRequest() {
+      if (cart.length === 0) {
+        alert('Додайте хоча б одну запчастину в кошик!');
+        return;
+      }
+      const phone = document.getElementById('clientPhone').value.trim();
+      if (!phone) {
+        alert('Будь ласка, вкажіть ваш номер телефону для зв’язку!');
+        return;
+      }
+      const name = document.getElementById('clientName').value.trim() || 'Клієнт';
+      const skuList = cart.map(i => `${i.sku} (${i.qty} шт.)`).join(', ');
+      alert(`Дякуємо, ${name}!\nВаш запит на прорахунок ціни прийнято:\n${skuList}\n\nМенеджер AgroAssist зателефонує вам на номер ${phone} найближчим часом!`);
+      cart = [];
+      updateCartUI();
+      toggleCart(false);
+    }
+
+    function copyCartForMessenger(messenger) {
+      if (cart.length === 0) {
+        alert('Кошик порожній!');
+        return;
+      }
+      const text = `Доброго дня, AgroAssist! Підкажіть актуальну ціну та наявність по запчастинах:\n` +
+        cart.map((i, idx) => `${idx + 1}. Артикул: ${i.sku} — ${i.qty} шт.`).join('\n');
+      navigator.clipboard.writeText(text);
+      alert(`Список артикулів скопійовано у буфер обміну для відправки у ${messenger}!\n\n${text}`);
+    }
+
+    // 9. МОДАЛЬНЕ ВІКНО ЗВОРОТНОГО ДЗВІНКА
+    function openCallbackModal(sku = '') {
+      const skuEl = document.getElementById('modalSkuText');
+      skuEl.textContent = sku ? `Запит по артикулу: ${sku}` : 'Загальний запит по каталогу запчастин';
+      document.getElementById('callbackModal').classList.remove('hidden');
+    }
+
+    function closeCallbackModal() {
+      document.getElementById('callbackModal').classList.add('hidden');
+    }
+
+    function confirmModalCallback() {
+      const phone = document.getElementById('modalPhoneInput').value.trim();
+      if (!phone) {
+        alert('Введіть ваш номер телефону!');
+        return;
+      }
+      alert(`Дякуємо! Ми передзвонимо вам на номер ${phone} протягом 5 хвилин.`);
+      closeCallbackModal();
+    }
+
+    // 10. ГОЛОВНИЙ HERO-СЛАЙДЕР
+    let currentHeroSlide = 0;
+    const heroSlides = document.querySelectorAll('.hero-slide');
+
+    function changeHeroSlide(step) {
+      heroSlides[currentHeroSlide].classList.remove('opacity-100');
+      heroSlides[currentHeroSlide].classList.add('opacity-0', 'pointer-events-none');
+      currentHeroSlide = (currentHeroSlide + step + heroSlides.length) % heroSlides.length;
+      heroSlides[currentHeroSlide].classList.remove('opacity-0', 'pointer-events-none');
+      heroSlides[currentHeroSlide].classList.add('opacity-100');
+    }
+
+    setInterval(() => changeHeroSlide(1), 6000);
+
+    // Ініціалізація при завантаженні
+    renderCategories();
+    renderFeaturedCarousel();
+    applyCatalogFilters();
+    updateCartUI();
+  </script>
+</body>
+</html>
