@@ -70,7 +70,7 @@
             id="searchInput"
             type="text"
             autocomplete="off"
-            placeholder="Пошук за каталожним номером (напр. H128234, AH139436, AR100124)..."
+            placeholder="Пошук за каталожним номером (напр. H128234, AH139436, RE504836)..."
             class="w-full pl-11 pr-24 py-2.5 rounded-xl border-2 border-jdGreen/40 focus:border-jdGreen focus:outline-none text-sm shadow-sm font-medium"
           />
           <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-jdGreen"></i>
@@ -84,11 +84,22 @@
         </div>
       </div>
 
-      <!-- Кнопки дій та Кошик -->
-      <div class="flex items-center space-x-3 order-2 lg:order-3">
+      <!-- Кнопки дій, Каталог та Кошик -->
+      <div class="flex items-center space-x-2.5 order-2 lg:order-3">
+        <a
+          href="https://partscatalog.deere.com/jdrc/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="bg-gray-100 hover:bg-jdGreen hover:text-white text-jdDark px-3.5 py-2.5 rounded-xl font-bold text-sm flex items-center space-x-1.5 shadow-sm transition"
+          title="Офіційний електронний каталог запчастин John Deere"
+        >
+          <i class="fa-solid fa-book-open text-jdYellow"></i>
+          <span class="hidden sm:inline">Каталог</span>
+        </a>
+
         <a
           href="tel:+380681198735"
-          class="hidden sm:flex items-center space-x-2 bg-jdYellow hover:bg-yellow-400 text-black font-extrabold px-4 py-2.5 rounded-xl text-sm shadow-sm transition"
+          class="hidden md:flex items-center space-x-1.5 bg-jdYellow hover:bg-yellow-400 text-black font-extrabold px-3.5 py-2.5 rounded-xl text-sm shadow-sm transition"
         >
           <i class="fa-solid fa-phone-volume animate-bounce"></i>
           <span>+380 68 119 87 35</span>
@@ -99,7 +110,7 @@
           class="relative bg-jdGreen hover:bg-jdDark text-white px-4 py-2.5 rounded-xl font-bold text-sm flex items-center space-x-2 shadow transition"
         >
           <i class="fa-solid fa-cart-shopping text-jdYellow"></i>
-          <span class="hidden sm:inline">Кошик запиту</span>
+          <span class="hidden sm:inline">Кошик</span>
           <span
             id="cartBadge"
             class="bg-jdYellow text-jdDark font-extrabold text-xs px-2 py-0.5 rounded-full"
@@ -118,7 +129,7 @@
           <h2 class="text-xl sm:text-2xl font-extrabold text-jdDark mt-1">
             Запит: «<span id="searchQueryDisplay" class="text-jdGreen"></span>»
           </h2>
-          <p class="text-xs text-gray-500 mt-0.5">Знайдено позицій: <strong id="searchCountDisplay">0</strong></p>
+          <p class="text-xs text-gray-500 mt-0.5">Знайдено в базі: <strong id="searchCountDisplay">0</strong> поз.</p>
         </div>
         <div class="flex items-center gap-3">
           <a href="tel:+380681198735" class="bg-jdYellow hover:bg-yellow-400 text-black font-extrabold px-4 py-2.5 rounded-xl text-xs sm:text-sm flex items-center space-x-2 shadow-sm">
@@ -153,16 +164,17 @@
           />
           <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent flex items-center">
             <div class="max-w-7xl mx-auto px-6 w-full text-white">
-              <span class="bg-jdYellow text-black font-extrabold text-xs uppercase px-3 py-1 rounded-full">Каталог запчастин John Deere</span>
+              <span class="bg-jdYellow text-black font-extrabold text-xs uppercase px-3 py-1 rounded-full">Офіційний підбір запчастин</span>
               <h1 class="text-3xl sm:text-5xl font-extrabold mt-4 max-w-2xl leading-tight">
-                Запчастини для комбайнів та тракторів <span class="text-jdYellow">John Deere</span>
+                Запчастини для сільгосптехніки <span class="text-jdYellow">John Deere</span>
               </h1>
               <p class="mt-3 text-gray-200 max-w-xl text-sm sm:text-base">
-                Шукайте потрібний каталожний номер через пошук у шапці сайту, додавайте деталі в кошик або телефонуйте для миттєвого прорахунку ціни.
+                Введіть каталожний номер у пошук або скористайтеся офіційним електронним каталогом для точного підбору деталей.
               </p>
               <div class="mt-6 flex flex-wrap gap-3">
-                <a href="#catalogSection" class="bg-jdYellow hover:bg-yellow-400 text-black font-extrabold px-6 py-3 rounded-xl shadow transition">
-                  Перейти до каталогу
+                <a href="https://partscatalog.deere.com/jdrc/" target="_blank" rel="noopener noreferrer" class="bg-jdYellow hover:bg-yellow-400 text-black font-extrabold px-6 py-3 rounded-xl shadow transition flex items-center space-x-2">
+                  <i class="fa-solid fa-book-open"></i>
+                  <span>Відкрити каталог John Deere</span>
                 </a>
                 <a href="tel:+380681198735" class="bg-white/15 hover:bg-white/25 backdrop-blur text-white font-bold px-6 py-3 rounded-xl border border-white/30 transition">
                   <i class="fa-solid fa-phone mr-2 text-jdYellow"></i>+380 68 119 87 35
@@ -186,7 +198,7 @@
                 Двигун, гідравліка, жниварки та посівні комплекси
               </h2>
               <p class="mt-3 text-gray-200 max-w-xl text-sm sm:text-base">
-                Зберіть список деталей у кошик — заявка миттєво надійде менеджеру, і ми підготуємо найкращу пропозицію!
+                Зберіть список деталей у кошик та надішліть менеджеру у Viber для миттєвого прорахунку ціни!
               </p>
               <div class="mt-6 flex flex-wrap gap-3">
                 <a href="tel:+380681198735" class="bg-jdYellow hover:bg-yellow-400 text-black font-extrabold px-6 py-3 rounded-xl shadow transition">
@@ -207,34 +219,16 @@
       </button>
     </section>
 
-    <!-- СЛАЙДЕР-КАРУСЕЛЬ ХІТОВИХ ПОЗИЦІЙ -->
-    <section class="bg-white py-10 border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4">
-        <div class="flex justify-between items-center mb-6">
-          <div>
-            <span class="text-xs font-extrabold uppercase tracking-wider text-jdGreen bg-jdGreen/10 px-2.5 py-1 rounded-md">Актуально в сезон</span>
-            <h2 class="text-2xl font-extrabold text-jdDark mt-1">Популярні артикули</h2>
-          </div>
-          <div class="flex space-x-2">
-            <button onclick="scrollCarousel(-1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-jdGreen hover:text-white transition flex items-center justify-center">
-              <i class="fa-solid fa-arrow-left"></i>
-            </button>
-            <button onclick="scrollCarousel(1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-jdGreen hover:text-white transition flex items-center justify-center">
-              <i class="fa-solid fa-arrow-right"></i>
-            </button>
-          </div>
-        </div>
-
-        <div id="featuredCarousel" class="flex space-x-4 overflow-x-auto no-scrollbar scroll-smooth pb-2">
-          <!-- Картки слайдера -->
-        </div>
-      </div>
-    </section>
-
     <!-- ОСНОВНИЙ КАТАЛОГ ЗАПЧАСТИН -->
     <section id="catalogSection" class="max-w-7xl mx-auto px-4 py-10">
-      <div class="mb-6">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-jdDark">Каталог запчастин</h2>
+      <div class="mb-6 flex flex-wrap justify-between items-center gap-4">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-jdDark">Каталог запчастин</h2>
+        </div>
+        <a href="https://partscatalog.deere.com/jdrc/" target="_blank" rel="noopener noreferrer" class="bg-jdGreen hover:bg-jdDark text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm flex items-center space-x-2 shadow transition">
+          <i class="fa-solid fa-external-link-alt text-jdYellow"></i>
+          <span>Перейти в офіційний каталог JD</span>
+        </a>
       </div>
 
       <!-- Сітка товарів -->
@@ -277,7 +271,7 @@
       <div class="p-5 bg-gray-50 border-t border-gray-200 space-y-3">
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 flex items-start space-x-2">
           <i class="fa-solid fa-phone-volume text-amber-600 mt-0.5 text-base"></i>
-          <span><strong>Ціни за запитом:</strong> залиште контакти для миттєвої відправки заявки менеджеру або зв'яжіться з нами у Viber / за телефоном <strong>+380 68 119 87 35</strong>.</span>
+          <span><strong>Ціни за запитом:</strong> залиште контакти для миттєвої відправки замовлення або зверніться у Viber за номером <strong>+380 68 119 87 35</strong>.</span>
         </div>
 
         <input id="clientName" type="text" placeholder="Ваше ім'я або назва ФГ" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-jdGreen" />
@@ -321,44 +315,12 @@
     </div>
   </footer>
 
-  <!-- СКРИПТ РОБОТИ КАТАЛОГУ, ПОШУКУ ТА КОШИКА -->
+  <!-- СКРИПТ РОБОТИ КАТАЛОГУ ТА КОШИКА -->
   <script>
     const PHONE_DISPLAY = '+380 68 119 87 35';
     const PHONE_LINK = '+380681198735';
     const VIBER_NUMBER = '380681198735';
     const TG_BOT_TOKEN = '8625250191:AAH7EcsiSa55BHy3u2ybXHHVaK7fNDuwWTY';
-
-    const PART_IMAGES = {
-      engine: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=700&q=80',
-      combine: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=700&q=80',
-      seeder: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=700&q=80',
-      bearings: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=700&q=80',
-      chassis: 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=700&q=80',
-      standard: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=700&q=80'
-    };
-
-    function classifySku(sku) {
-      const match = String(sku).trim().match(/^([A-Za-z]+)/);
-      const pref = match ? match[1].toUpperCase() : 'STD';
-      if (['R', 'RE', 'AR', 'SE', 'DZ', 'RG'].includes(pref)) return 'engine';
-      if (['H', 'AH', 'Z', 'AZ', 'HXE', 'AXE', 'KXE'].includes(pref)) return 'combine';
-      if (['A', 'AA', 'N', 'AN', 'B', 'AB', 'GD', 'GA', 'KK'].includes(pref)) return 'seeder';
-      if (['JD', 'AT', 'T', 'TY', 'M', 'AM', 'E', 'AE'].includes(pref)) return 'bearings';
-      if (['L', 'AL', 'CE', 'SJ', 'LV', 'SU'].includes(pref)) return 'chassis';
-      return 'standard';
-    }
-
-    function getPartTitle(sku, catKey) {
-      const titles = {
-        engine: 'Деталь двигуна / трансмісії John Deere',
-        combine: 'Запчастина комбайна / жниварки John Deere',
-        seeder: 'Вузол сівалки / ґрунтообробки John Deere',
-        bearings: 'Підшипник / гідравлічний вузол John Deere',
-        chassis: 'Елемент ходової / моста John Deere',
-        standard: 'Оригінальний кріпильний елемент / вузол JD'
-      };
-      return `${titles[catKey]} (${sku})`;
-    }
 
     const FALLBACK_DB = {
       JOHN_COMB: [
@@ -400,35 +362,27 @@
     let visibleCount = 16;
     let cart = JSON.parse(localStorage.getItem('agroassist_cart') || '[]');
 
-    function getFullPartData(item) {
-      const cat = classifySku(item.sku);
-      return {
-        sku: item.sku,
-        src: item.src,
-        cat: cat,
-        title: getPartTitle(item.sku, cat),
-        img: PART_IMAGES[cat]
-      };
-    }
-
-    // СТВОРЕННЯ КАРТКИ ТОВАРУ (БЕЗ ПЛАШКИ "ПІДТВЕРДЖЕНО В БАЗІ")
-    function createProductCardHTML(rawItem, isCompact = false) {
-      const item = getFullPartData(rawItem);
+    function createProductCardHTML(rawItem) {
       return `
-        <div class="${isCompact ? 'min-w-[270px] max-w-[270px]' : ''} bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
           <div>
-            <div class="relative h-40 overflow-hidden bg-gray-100">
-              <img src="${item.img}" alt="${item.sku}" class="w-full h-full object-cover" loading="lazy" />
-              <span class="absolute top-2.5 left-2.5 bg-jdDark/90 text-jdYellow text-[11px] font-extrabold px-2.5 py-1 rounded-md">
-                ${item.src}
+            <!-- Фірмовий плакат із артикулом -->
+            <div class="relative h-36 bg-gradient-to-br from-jdDark to-jdGreen flex flex-col items-center justify-center p-4 text-center">
+              <span class="absolute top-2.5 left-2.5 bg-black/40 text-jdYellow text-[10px] font-extrabold px-2 py-0.5 rounded">
+                ${rawItem.src}
               </span>
+              <div class="w-9 h-9 rounded-full bg-jdYellow/20 text-jdYellow flex items-center justify-center text-base mb-1">
+                <i class="fa-solid fa-gear"></i>
+              </div>
+              <span class="text-white text-[10px] uppercase tracking-widest font-semibold opacity-75">John Deere Parts</span>
+              <span class="text-jdYellow text-base font-black tracking-wider mt-0.5 select-all">${rawItem.sku}</span>
             </div>
+
             <div class="p-4">
               <div class="flex items-baseline justify-between">
                 <span class="text-xs text-gray-500 font-semibold">Артикул:</span>
-                <span class="text-lg font-black text-jdGreen tracking-wide select-all">${item.sku}</span>
+                <span class="text-base font-black text-jdGreen tracking-wide select-all">${rawItem.sku}</span>
               </div>
-              <h4 class="text-xs text-gray-700 font-semibold mt-1 line-clamp-2">${item.title}</h4>
 
               <a
                 href="tel:${PHONE_LINK}"
@@ -447,7 +401,7 @@
 
           <div class="px-4 pb-4 pt-1 flex gap-2">
             <button
-              onclick="addToCart('${item.sku}')"
+              onclick="addToCart('${rawItem.sku}')"
               class="w-full bg-jdGreen hover:bg-jdDark text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center space-x-1.5 shadow-sm transition"
             >
               <i class="fa-solid fa-cart-plus text-jdYellow"></i>
@@ -456,16 +410,6 @@
           </div>
         </div>
       `;
-    }
-
-    function renderFeaturedCarousel() {
-      const container = document.getElementById('featuredCarousel');
-      container.innerHTML = catalogItems.slice(0, 12).map(item => createProductCardHTML(item, true)).join('');
-    }
-
-    function scrollCarousel(direction) {
-      const container = document.getElementById('featuredCarousel');
-      container.scrollBy({ left: direction * 320, behavior: 'smooth' });
     }
 
     function renderCatalog() {
@@ -479,7 +423,7 @@
       renderCatalog();
     }
 
-    // ПОШУК ПОВЕРХ САЙТУ (СУВОРО ПО БАЗІ ДАНИХ)
+    // ПОШУК ПОВЕРХ САЙТУ
     const searchInput = document.getElementById('searchInput');
     const searchOverlay = document.getElementById('searchOverlay');
     const clearSearchBtn = document.getElementById('clearSearchBtn');
@@ -515,7 +459,7 @@
             </div>
             <h4 class="font-extrabold text-lg text-gray-800">Каталожний номер «${query}» не знайдено!</h4>
             <p class="text-xs sm:text-sm text-gray-500 mt-1 max-w-md mx-auto">
-              Такого номера немає в каталозі. Перевірте правильність написання артикула або зателефонуйте менеджеру.
+              Такого номера немає в базі даних. Перевірте правильність написання артикула або зателефонуйте менеджеру.
             </p>
             <a href="tel:${PHONE_LINK}" class="mt-4 inline-flex items-center space-x-2 bg-jdYellow hover:bg-yellow-400 text-black font-extrabold px-6 py-3 rounded-xl text-sm shadow">
               <i class="fa-solid fa-phone"></i>
@@ -555,10 +499,10 @@
 
       container.innerHTML = cart.map(item => `
         <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 flex items-center justify-between gap-3">
-          <img src="${item.img}" alt="${item.sku}" class="w-12 h-12 rounded-lg object-cover shrink-0" />
+          <div class="w-10 h-10 rounded-lg bg-jdGreen text-jdYellow flex items-center justify-center font-black text-xs shrink-0">JD</div>
           <div class="flex-1 min-w-0">
             <div class="font-black text-jdGreen text-sm">${item.sku}</div>
-            <div class="text-[11px] text-gray-500 truncate">${item.title}</div>
+            <div class="text-[11px] text-gray-500 truncate">Запчастина John Deere</div>
             <a href="tel:${PHONE_LINK}" class="text-[11px] font-bold text-red-700 hover:underline">
               <i class="fa-solid fa-phone mr-1"></i>Дзвоніть по ціні
             </a>
@@ -579,12 +523,11 @@
       const clean = String(sku).trim().toUpperCase();
       const rawProduct = skuMap.get(clean);
       if (!rawProduct) return;
-      const product = getFullPartData(rawProduct);
       const existing = cart.find(i => i.sku === clean);
       if (existing) {
         existing.qty += 1;
       } else {
-        cart.push({ ...product, qty: 1 });
+        cart.push({ ...rawProduct, qty: 1 });
       }
       updateCartUI();
       toggleCart(true);
@@ -609,7 +552,7 @@
       document.getElementById('cartDrawer').classList.toggle('hidden', !show);
     }
 
-    // ПЕРЕХІД У VIBER ІЗ АВТОМАТИЧНО ЗАПОВНЕНИМ РЯДКОМ ПОВІДОМЛЕННЯ (ЩО ЗАМОВИВ І КАТАЛОЖНИЙ НОМЕР)
+    // ПЕРЕХІД У VIBER
     function openViberDepartment() {
       if (cart.length === 0) {
         alert('Спочатку додайте хоча б одну запчастину в кошик!');
@@ -627,12 +570,10 @@
       if (name) msg += `\nІм'я: ${name}`;
       if (phone) msg += `\nМій телефон: ${phone}`;
 
-      // Додатково копіюємо текст у буфер обміну
       if (navigator.clipboard) {
         navigator.clipboard.writeText(msg).catch(() => {});
       }
 
-      // Відкриваємо чат Viber із номером +380681198735 і вставляємо сформований кошик прямо в поле вводу тексту
       const encodedText = encodeURIComponent(msg);
       window.location.href = `viber://chat?number=%2B${VIBER_NUMBER}&text=${encodedText}`;
     }
@@ -727,10 +668,8 @@
 
     setInterval(() => changeHeroSlide(1), 6000);
 
-    // Очищаємо кошик від неіснуючих номерів
     cart = cart.filter(item => skuMap.has(String(item.sku).trim().toUpperCase()));
 
-    renderFeaturedCarousel();
     renderCatalog();
     updateCartUI();
   </script>
